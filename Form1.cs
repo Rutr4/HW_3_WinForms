@@ -51,7 +51,9 @@ namespace HW_3_WinForms
             btnFilled.Click += BtnFilled_click;
             btnClear.Click += BtnClear_click;
 
-            btnBezier.Enabled = true;
+            btnSave.Enabled = false;
+            btnMove.Enabled = false;
+            btnBezier.Enabled = false;
             btnCurve.Enabled = false;
             btnFilled.Enabled = false;
             btnPolygon.Enabled = false;
@@ -72,16 +74,24 @@ namespace HW_3_WinForms
         #region MouseMethods
         void Form1_MouseClick(object sender, MouseEventArgs e)
         {
-            int pointHalfRadius = pointRadius / 2;
-
             if (bPoints && e.Button == MouseButtons.Left)
             {
+                if (pointsLst.Count != 0)
+                {
+                    btnPolygon.Enabled = true;
+                    if (pointsLst.Count >= 2)
+                    {
+                        btnFilled.Enabled = true;
+                        btnCurve.Enabled = true;
+                        if (pointsLst.Count >= 3)
+                            btnBezier.Enabled = true;
+                    }
+                }
                 // Сохраняем координаты курсора мышки
+                int pointHalfRadius = pointRadius / 2;
                 Point p = new(e.X - pointHalfRadius, e.Y - pointHalfRadius);
-
                 // Добавляем в коллекцию точек
                 pointsLst.Add(p);
-
                 // Генерируем событие Paint для перерисовки точек
                 Refresh();
             }
@@ -92,7 +102,9 @@ namespace HW_3_WinForms
             {
                 if (IsTargetPoint(pointsLst[i], e.Location))
                 {
+                    bPoints = !bPoints;
                     bDrag = true;
+
                     draggingPoint = i;
                     break;
                 }
@@ -108,7 +120,11 @@ namespace HW_3_WinForms
         }
         void Form1_MouseUp(object sender, MouseEventArgs e)
         {
-            bDrag = false;
+            if (bDrag)
+            {
+                bDrag = false;
+                bPoints = true;
+            }
         }
         #endregion
 
@@ -248,6 +264,7 @@ namespace HW_3_WinForms
                 btnCurve.Enabled = false;
                 btnFilled.Enabled = false;
                 btnPolygon.Enabled = false;
+                currentLineType = LineType.None;
             }
             Refresh();
         }
