@@ -28,10 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form2_Parameters";
+            SuspendLayout();
+            // 
+            // Form2_Parameters
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(384, 461);
+            FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            Name = "Form2_Parameters";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Параметры";
+            ResumeLayout(false);
         }
 
         #endregion

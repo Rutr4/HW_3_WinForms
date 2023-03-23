@@ -6,7 +6,6 @@ namespace HW_3_WinForms
 {
     public partial class Form1 : Form
     {
-        private System.Windows.Forms.Timer moveTimer = new();
         public enum LineType { None, Curve, Bezier, Polygone, FilledCurve };
 
         public class Figure // Класс Figure введён для сохранения фигур
@@ -27,7 +26,6 @@ namespace HW_3_WinForms
         bool bPoints = true;
         bool bDrag = false;
         bool bMove = false;
-        bool bSave = false;
 
         // Определение текущей точки
         int draggingPoint;
@@ -49,6 +47,7 @@ namespace HW_3_WinForms
 
             // Buttons
             btnPoints.Click += BtnPoints_Click;
+            btnParams.Click += BtnParams_Click;
             btnMove.Click += BtnMove_Click;
             btnCurve.Click += BtnCurve_click;
             btnBezier.Click += BtnBezier_click;
@@ -70,17 +69,31 @@ namespace HW_3_WinForms
             #endregion
 
             #region Timer_Move
-            /*
-            System.Windows.Forms.Timer timer = new() { Interval = 30};
-            timer.Tick += MovePoints;
-            Paint += ShowCurve;
-            btn.Click += (o, e) => timer.Enabled = !timer.Enabled;
 
+            System.Windows.Forms.Timer timer = new() { Interval = 30 };
+            timer.Tick += TimerTickHandler;
             DoubleBuffered = true;
-            */
+
             #endregion
         }
 
+        private void BtnParams_Click(object? sender, EventArgs e)
+        {
+            bPoints = false;
+            bDrag = false;
+            bMove = false; 
+            Form2_Parameters f = new(this);
+            f.Show(this);
+        }
+
+        private void TimerTickHandler(object? sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        void BtnMove_Click(object? sender, EventArgs e)
+        {
+
+        } //TODO: РЕАЛИЗОВАТЬ
         #region MouseMethods
         void Form1_MouseClick(object? sender, MouseEventArgs e)
         {
@@ -111,7 +124,7 @@ namespace HW_3_WinForms
         {
             for (int i = 0; i < currentFigure.points.Count; i++)
             {
-                if (IsTargetPoint(currentFigure.points[i], e.Location))
+                if (IsOnPoint(currentFigure.points[i], e.Location))
                 {
                     bPoints = !bPoints;
                     bDrag = true;
@@ -171,7 +184,7 @@ namespace HW_3_WinForms
             }
         }
         void ShowLines(Graphics g, LineType currentLineType)
-        { 
+        {
             if (figuresLst.Count != 0)
             {
                 foreach (var figure in figuresLst)
@@ -179,7 +192,7 @@ namespace HW_3_WinForms
                     ShowLineOfFigure(figure, g);
                 }
             }
-            if (currentFigure.points.Count != 0)
+            if (currentFigure.points.Count > 2)
             {
                 ShowLineOfFigure(currentFigure, g);
             }
@@ -220,7 +233,6 @@ namespace HW_3_WinForms
             }
         }
 
-
         void BtnPoints_Click(object? sender, EventArgs e)
         {
             bPoints = !bPoints;
@@ -228,18 +240,18 @@ namespace HW_3_WinForms
             bMove = false;
             Refresh();
         }
-        void BtnMove_Click(object? sender, EventArgs e)
-        {
-            
-        } //TODO: РЕАЛИЗОВАТЬ
         void BtnSave_Click(object? sender, EventArgs e)
         {
             figuresLst.Add(currentFigure);
+            btnBezier.Enabled = false;
+            btnCurve.Enabled = false;
+            btnFilled.Enabled = false;
+            btnPolygon.Enabled = false;
             currentFigure = new();
         }
-        
+
         // Находится ли курсор над одной из точек в момент нажатия
-        bool IsTargetPoint(Point pixelPoint, Point cursor)
+        bool IsOnPoint(Point pixelPoint, Point cursor)
         {
             if (cursor.X >= pixelPoint.X &&
                 cursor.X <= pixelPoint.X + currentFigure.pointRadius &&
@@ -284,7 +296,7 @@ namespace HW_3_WinForms
                 Refresh();
             }
         }
-        
+
         // Закрашивание фигуры
         void BtnFilled_click(object? sender, EventArgs e)
         {
@@ -337,26 +349,25 @@ namespace HW_3_WinForms
         } // TODO: ДОДЕЛАТЬ (SPACE, +, -)
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            bool IsHandled = true;
             switch (keyData)
             {
                 case Keys.Up:
-                    
+
                     break;
                 case Keys.Down:
-                    
+
                     break;
                 case Keys.Left:
-                    
+
                     break;
                 case Keys.Right:
-                    
+
                     break;
                 default:
-                    IsHandled = false;
                     break;
             }
-            return IsHandled;
-        } // TODO: ДОДЕЛАТЬ
+            return true;
+        }
+
     }
 }

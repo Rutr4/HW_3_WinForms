@@ -36,6 +36,7 @@
             btnFilled = new Button();
             btnClear = new Button();
             btnSave = new Button();
+            btnParams = new Button();
             SuspendLayout();
             // 
             // btnPoints
@@ -110,11 +111,21 @@
             btnSave.Text = "Сохранить";
             btnSave.UseVisualStyleBackColor = true;
             // 
+            // btnParams
+            // 
+            btnParams.Location = new Point(224, 94);
+            btnParams.Name = "btnParams";
+            btnParams.Size = new Size(100, 35);
+            btnParams.TabIndex = 8;
+            btnParams.Text = "Параметры";
+            btnParams.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(888, 421);
+            ClientSize = new Size(884, 461);
+            Controls.Add(btnParams);
             Controls.Add(btnSave);
             Controls.Add(btnClear);
             Controls.Add(btnFilled);
@@ -123,7 +134,10 @@
             Controls.Add(btnCurve);
             Controls.Add(btnMove);
             Controls.Add(btnPoints);
+            MaximumSize = new Size(1920, 1080);
+            MinimumSize = new Size(900, 400);
             Name = "Form1";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Form1";
             ResumeLayout(false);
         }
@@ -138,5 +152,6 @@
         private Button btnFilled;
         private Button btnClear;
         private Button btnSave;
+        private Button btnParams;
     }
 }
