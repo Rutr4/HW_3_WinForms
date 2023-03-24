@@ -19,7 +19,7 @@ namespace HW_3_WinForms
             public Color lineColor = Color.DeepSkyBlue;
             public int lineWidth = 10;
         }
-        Figure currentFigure = new();
+        public Figure currentFigure = new();
         public List<Figure> figuresLst = new(); // Список сохранённых фигур
 
         // Flags
@@ -79,11 +79,10 @@ namespace HW_3_WinForms
 
         private void BtnParams_Click(object? sender, EventArgs e)
         {
-            bPoints = false;
             bDrag = false;
             bMove = false; 
             Form2_Parameters f = new(this);
-            f.Show(this);
+            f.ShowDialog(this);
         }
 
         private void TimerTickHandler(object? sender, EventArgs e)
