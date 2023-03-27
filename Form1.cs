@@ -173,7 +173,7 @@ namespace HW_3_WinForms
                 default:
                     break;
             }
-        } // TODO: дндекюрэ (SPACE, +, -)
+        }
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             switch (keyData)
