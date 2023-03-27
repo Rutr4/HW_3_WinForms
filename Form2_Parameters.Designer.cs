@@ -63,18 +63,18 @@
             label1.AutoSize = true;
             label1.Location = new Point(15, 30);
             label1.Name = "label1";
-            label1.Size = new Size(82, 15);
+            label1.Size = new Size(106, 15);
             label1.TabIndex = 2;
-            label1.Text = "Размер точки";
+            label1.Text = "Размер точки (px)";
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.Location = new Point(15, 100);
             label2.Name = "label2";
-            label2.Size = new Size(90, 15);
+            label2.Size = new Size(117, 15);
             label2.TabIndex = 3;
-            label2.Text = "Ширина линии";
+            label2.Text = "Ширина линии  (px)";
             // 
             // TrackBarPointSize
             // 

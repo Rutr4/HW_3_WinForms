@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using static HW_3_WinForms.Form1;
@@ -6,6 +7,7 @@ namespace HW_3_WinForms
 {
     public partial class Form1 : Form
     {
+        System.Windows.Forms.Timer timer = new();
         public enum LineType { None, Curve, Bezier, Polygone, FilledCurve };
 
         public class Figure // Класс Figure введён для сохранения фигур
@@ -21,7 +23,7 @@ namespace HW_3_WinForms
         }
         public Figure currentFigure = new();
         public List<Figure> figuresLst = new(); // Список сохранённых фигур
-
+        public List<Point> Offsets = new();     // Список отклонения точек при движении фигуры
         // Flags
         bool bPoints = true;
         bool bDrag = false;
@@ -70,7 +72,7 @@ namespace HW_3_WinForms
 
             #region Timer_Move
 
-            System.Windows.Forms.Timer timer = new() { Interval = 30 };
+            timer.Interval = 20;
             timer.Tick += TimerTickHandler;
             DoubleBuffered = true;
 
@@ -80,20 +82,145 @@ namespace HW_3_WinForms
         private void BtnParams_Click(object? sender, EventArgs e)
         {
             bDrag = false;
-            bMove = false; 
+            if (bMove)
+            {
+                btnMove.PerformClick();
+            }
+
             Form2_Parameters f = new(this);
             f.ShowDialog(this);
         }
 
         private void TimerTickHandler(object? sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            MovePoints();
+            Refresh();
+        }
+        void MovePoints()
+        {
+            int xOffset, yOffset;
+
+            for (int i = 0; i < currentFigure.points.Count; i++)
+            {
+                xOffset = currentFigure.points[i].X + Offsets[i].X;
+                if (xOffset >= this.ClientRectangle.Width || xOffset <= 0)
+                {
+                    Offsets[i] = new Point(-Offsets[i].X, Offsets[i].Y);
+                    xOffset = currentFigure.points[i].X + Offsets[i].X;
+                }
+
+                yOffset = currentFigure.points[i].Y + Offsets[i].Y;
+                if (yOffset >= this.ClientRectangle.Height || yOffset <= 0)
+                {
+                    Offsets[i] = new Point(Offsets[i].X, -Offsets[i].Y);
+                    yOffset = currentFigure.points[i].Y + Offsets[i].Y;
+                }
+                currentFigure.points[i] = new Point(xOffset, yOffset);
+            }
         }
         void BtnMove_Click(object? sender, EventArgs e)
         {
+            if (currentFigure.points.Count < 2)
+                return;
 
-        } //TODO: РЕАЛИЗОВАТЬ
-        #region MouseMethods
+            bMove = !bMove;
+
+            if (bPoints)
+            {
+                bPoints = !bPoints;
+                btnPoints.Enabled = false;
+            }
+            else
+            {
+                bPoints = !bPoints;
+                btnPoints.Enabled = true;
+            }
+
+            if (bMove)
+            {
+                Offsets = new List<Point>();
+                Random rnd = new Random((int)DateTime.Now.Ticks);
+                for (int i = 0; i < currentFigure.points.Count; i++)
+                    Offsets.Add(new Point(rnd.Next(2, 10), rnd.Next(2, 10)));
+
+                timer.Start();
+            }
+            else
+                timer.Stop();
+        }
+
+        // Обработка нажатия клавиш клавиатуры
+        void Form1_keyDown(object? sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Escape: // Очистка формы
+                    btnClear.PerformClick();
+                    e.Handled = true;
+                    break;
+                case Keys.Space: // Включает/выключает режим движения
+                    btnMove.PerformClick();
+                    e.Handled = true;
+                    break;
+                case Keys.Oemplus: // Увеличивает  скорость движения точек
+                    for (int i = 0; i < Offsets.Count; i++)
+                        Offsets[i] = new Point(Offsets[i].X < 0 ? Offsets[i].X - 1 : Offsets[i].X + 1, Offsets[i].Y < 0 ? Offsets[i].Y - 1 : Offsets[i].Y + 1);
+                    break;
+                case Keys.OemMinus: // Уменьшает скорость движения точек
+                    for (int i = 0; i < Offsets.Count; i++)
+                        Offsets[i] = new Point(Offsets[i].X < 0 ? Offsets[i].X + 1 : Offsets[i].X - 1, Offsets[i].Y < 0 ? Offsets[i].Y + 1 : Offsets[i].Y - 1);
+                    break;
+                default:
+                    break;
+            }
+        } // TODO: ДОДЕЛАТЬ (SPACE, +, -)
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Up:
+                    if (bMove)
+                    {
+                        for (int i = 0; i < Offsets.Count; i++)
+                            Offsets[i] = new Point(Offsets[i].X, Offsets[i].Y < 0 ? Offsets[i].Y - 1 : Offsets[i].Y + 1);
+
+                        Refresh();
+                    }
+                    break;
+                case Keys.Down:
+                    if (bMove)
+                    {
+                        for (int i = 0; i < Offsets.Count; i++)
+                            Offsets[i] = new Point(Offsets[i].X, Offsets[i].Y < 0 ? Offsets[i].Y + 1 : Offsets[i].Y - 1);
+
+                        Refresh();
+                    }
+                    break;
+                case Keys.Left:
+                    if (bMove)
+                    {
+                        for (int i = 0; i < Offsets.Count; i++)
+                            Offsets[i] = new Point(Offsets[i].X < 0 ? Offsets[i].X + 1 : Offsets[i].X - 1, Offsets[i].Y);
+
+                        Refresh();
+                    }
+                    break;
+                case Keys.Right:
+                    if (bMove)
+                    {
+                        for (int i = 0; i < Offsets.Count; i++)
+                            Offsets[i] = new Point(Offsets[i].X < 0 ? Offsets[i].X - 1 : Offsets[i].X + 1, Offsets[i].Y);
+
+                        Refresh();
+                    }
+                    break;
+                default:
+                    return false;
+            }
+            return true;
+        }
+
+        #region MouseClickMethods
         void Form1_MouseClick(object? sender, MouseEventArgs e)
         {
             if (bPoints && e.Button == MouseButtons.Left)
@@ -106,6 +233,7 @@ namespace HW_3_WinForms
                         btnSave.Enabled = true;
                         btnFilled.Enabled = true;
                         btnCurve.Enabled = true;
+                        btnMove.Enabled = true;
                         if (currentFigure.points.Count >= 3)
                             btnBezier.Enabled = true;
                     }
@@ -123,7 +251,7 @@ namespace HW_3_WinForms
         {
             for (int i = 0; i < currentFigure.points.Count; i++)
             {
-                if (IsOnPoint(currentFigure.points[i], e.Location))
+                if (IsOnPoint(currentFigure.points[i], e.Location) && bMove == false)
                 {
                     bPoints = !bPoints;
                     bDrag = true;
@@ -241,6 +369,17 @@ namespace HW_3_WinForms
         }
         void BtnSave_Click(object? sender, EventArgs e)
         {
+            if (bMove)
+            {
+                btnMove.PerformClick();
+                btnPoints.Enabled = true;
+            }
+            if (bPoints == false)
+            {
+                bPoints = !bPoints;
+                btnPoints.Enabled = true;
+            }
+            Offsets.Clear();
             figuresLst.Add(currentFigure);
             btnBezier.Enabled = false;
             btnCurve.Enabled = false;
@@ -314,6 +453,10 @@ namespace HW_3_WinForms
         {
             if (currentFigure.points.Count != 0)
             {
+                if (bMove)
+                {
+                    btnMove.PerformClick();
+                }
                 currentFigure.points.Clear();
                 btnBezier.Enabled = false;
                 btnCurve.Enabled = false;
@@ -327,46 +470,5 @@ namespace HW_3_WinForms
             }
             Refresh();
         }
-
-        // Обработка нажатия клавиш клавиатуры
-        void Form1_keyDown(object? sender, KeyEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-                case Keys.Escape: // Очистка формы
-                    btnClear.PerformClick();
-                    break;
-                case Keys.Space: // Включает/выключает режим движения
-                    break;
-                case Keys.Oemplus: // Увеличивает  скорость движения точек
-                    break;
-                case Keys.OemMinus: // Уменьшает скорость движения точек
-                    break;
-                default:
-                    break;
-            }
-        } // TODO: ДОДЕЛАТЬ (SPACE, +, -)
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            switch (keyData)
-            {
-                case Keys.Up:
-
-                    break;
-                case Keys.Down:
-
-                    break;
-                case Keys.Left:
-
-                    break;
-                case Keys.Right:
-
-                    break;
-                default:
-                    break;
-            }
-            return true;
-        }
-
     }
 }

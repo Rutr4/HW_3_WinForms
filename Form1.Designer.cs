@@ -138,7 +138,7 @@
             MinimumSize = new Size(900, 400);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Form1";
+            Text = "6_VARIANT_HW_3_Muradyan_z3530903/00302";
             ResumeLayout(false);
         }
 
